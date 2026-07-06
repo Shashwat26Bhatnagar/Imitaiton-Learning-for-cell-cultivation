@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "dissertation"
+version = "0.1.0"
+description = "Dissertation project: PenSim GP world model (MC-PILCO) + BCNP causal discovery stages"
+authors = ["s2892016"]
+readme = "README.md"
+packages = [
+    { include = "pensim_wm",       from = "MCPILCO" },
+    { include = "model_learning",  from = "MCPILCO" },
+    { include = "gpr_lib",         from = "MCPILCO" },
+    { include = "policy_learning", from = "MCPILCO" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.13"
+
+# --- core numerical / ML stack ---
+numpy = ">=1.24,<2.0"
+torch = { version = ">=2.0,<3.0", source = "pytorch-cpu" }
+torchvision = {version = ">=0.15,<1.0", source = "pytorch-cpu"}
+matplotlib = ">=3.7,<4.0"
+scikit-learn = ">=1.2,<2.0"
+hashfile = ">=1.0,<3.0"
+# --- local sibling packages (adjust paths if any of these lack their own packaging) ---
+smpl = { path = "smpl", develop = true }
+pensimpy = { path = "PenSimPy", develop = true }
+
+fastodeint = { path = "fastodeint", develop = true }
+
+# --- optional extras (only needed for MC-PILCO's MuJoCo/UR5 demos) ---
+gym = { version = ">=0.21,<0.27", optional = true }
+mujoco-py = { version = ">=2.0,<2.2", optional = true }
+
+[tool.poetry.extras]
+mujoco = ["gym", "mujoco-py"]
+
+[[tool.poetry.source]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.0,<9.0"
+
+[build-system]
+requires = ["poetry-core>=1.5,<2.0"]
+build-backend = "poetry.core.masonry.api"
