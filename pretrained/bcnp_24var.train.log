@@ -1,0 +1,38 @@
+[gen] synth_24var_neuralnet_0.hdf5: exists, skipping
+[gen] synth_24var_linear_1.hdf5: exists, skipping
+[gen] synth_24var_neuralnet_2.hdf5: exists, skipping
+[gen] synth_24var_linear_3.hdf5: exists, skipping
+[gen] synth_24var_neuralnet_4.hdf5: exists, skipping
+[gen] synth_24var_linear_5.hdf5: exists, skipping
+[gen] synth_24var_neuralnet_6.hdf5: exists, skipping
+[gen] synth_24var_linear_7.hdf5: exists, skipping
+[gen] synth_24var_neuralnet_8.hdf5: exists, skipping
+[gen] synth_24var_linear_9.hdf5: exists, skipping
+[gen] synth_24var_neuralnet_10.hdf5: exists, skipping
+[gen] synth_24var_linear_11.hdf5: exists, skipping
+[gen] synth_24var_neuralnet_12.hdf5: exists, skipping
+[gen] synth_24var_linear_13.hdf5: exists, skipping
+[gen] synth_24var_neuralnet_14.hdf5: exists, skipping
+[gen] synth_24var_linear_15.hdf5: exists, skipping
+[gen] generating 4 held-out files (unseen graphs)...
+[gen] synth_24var_neuralnet_0.hdf5: exists, skipping
+[gen] synth_24var_linear_1.hdf5: exists, skipping
+[gen] synth_24var_neuralnet_2.hdf5: exists, skipping
+[gen] synth_24var_linear_3.hdf5: exists, skipping
+Using 2 decoder layers.
+[pretrain] num_nodes=24 on cpu; 1,527,954 params
+[pretrain] progress markers -> pretrained/bcnp_24var.pt.progress.jsonl  (tail -f it to monitor a long/unattended run)
+[train] RESUMING from pretrained/bcnp_24var.pt.resume at epoch 21/20
+[progress] {"event": "resume", "from_epoch": 20}
+[train] already trained 20 >= 20 epochs; nothing to do.
+[pretrain] saved checkpoint -> pretrained/bcnp_24var.pt
+[pretrain] saved meta -> pretrained/bcnp_24var.pt.meta.json
+[sanity] FINAL held-out edge-recovery AUC = 0.809  (genuine generalization; 0.5 = chance). mean edge prob = 0.022
+
+[pretrain] to infer on PenSim, reuse the SAME architecture flags:
+  poetry run python -m pensim_wm.bcnp_causal infer \
+    --data datasets/data/pensim_causal/pensim_phase0.hdf5 \
+    --checkpoint pretrained/bcnp_24var.pt \
+    --d_model 128 --dim_feedforward 256 --nhead 8 \
+    --num_layers_encoder 4 --num_layers_decoder 4 \
+    --n_perm_samples 50 --sinkhorn_iter 300

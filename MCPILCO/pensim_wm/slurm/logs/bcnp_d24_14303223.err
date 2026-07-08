@@ -1,0 +1,4 @@
+ERROR: ld.so: object '/opt/cray/pe/lib64/libsci_cray_mp.so.5' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/opt/cray/pe/lib64/libsci_cray_mp.so.5' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/opt/cray/pe/lib64/libsci_cray_mp.so.5' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+/var/spool/slurmd/job14303223/slurm_script: line 46: /work/m25oc/m25oc/s2892016/project/Dissertation/.venv/bin/python: No such file or directory

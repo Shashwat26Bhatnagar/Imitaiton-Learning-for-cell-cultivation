@@ -1,0 +1,4 @@
+[slurm] job 14303526 on nid200003 at Tue Jul  7 07:22:07 PM BST 2026
+[slurm] LD_LIBRARY_PATH=/opt/cray/pe/python/3.10.10/lib:/opt/cray/pe/python/3.11.7/lib:/opt/cray/pe/papi/7.2.0.2/lib64:/opt/cray/libfabric/1.12.1.2.2.0.0/lib64
+[slurm] libpython check:
+ls: cannot access '/opt/cray/pe/python/3.10.10/lib/libpython3.10.so*': No such file or directory

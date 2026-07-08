@@ -1,0 +1,44 @@
+{"event": "start", "epochs": 20, "start_epoch": 0, "n_files": 16, "num_nodes": 24}
+{"event": "epoch", "epoch": 1, "epochs": 20, "loss": 0.10960362176410854}
+{"event": "epoch", "epoch": 2, "epochs": 20, "loss": 0.10096809407696128}
+{"event": "checkpoint", "epoch": 2, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 2, "held_out_auc": 0.505533473310228, "mean_edge_prob": 0.01714276149868965}
+{"event": "epoch", "epoch": 3, "epochs": 20, "loss": 0.10103873361367732}
+{"event": "epoch", "epoch": 4, "epochs": 20, "loss": 0.1009960132651031}
+{"event": "checkpoint", "epoch": 4, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 4, "held_out_auc": 0.519301871619966, "mean_edge_prob": 0.025638600811362267}
+{"event": "epoch", "epoch": 5, "epochs": 20, "loss": 0.1009254630189389}
+{"event": "epoch", "epoch": 6, "epochs": 20, "loss": 0.1007854996714741}
+{"event": "checkpoint", "epoch": 6, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 6, "held_out_auc": 0.54238718333778, "mean_edge_prob": 0.019997766241431236}
+{"event": "epoch", "epoch": 7, "epochs": 20, "loss": 0.09983285865746439}
+{"event": "epoch", "epoch": 8, "epochs": 20, "loss": 0.09667615056969225}
+{"event": "checkpoint", "epoch": 8, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 8, "held_out_auc": 0.7138111213159366, "mean_edge_prob": 0.02470107190310955}
+{"event": "epoch", "epoch": 9, "epochs": 20, "loss": 0.09363382461015135}
+{"event": "epoch", "epoch": 10, "epochs": 20, "loss": 0.0914351922692731}
+{"event": "checkpoint", "epoch": 10, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 10, "held_out_auc": 0.7643720501734774, "mean_edge_prob": 0.025173868983983994}
+{"event": "epoch", "epoch": 11, "epochs": 20, "loss": 0.08989557309541851}
+{"event": "epoch", "epoch": 12, "epochs": 20, "loss": 0.08884643705096096}
+{"event": "checkpoint", "epoch": 12, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 12, "held_out_auc": 0.7837170099792726, "mean_edge_prob": 0.022854428738355637}
+{"event": "epoch", "epoch": 13, "epochs": 20, "loss": 0.08813409029971808}
+{"event": "epoch", "epoch": 14, "epochs": 20, "loss": 0.08801658393349499}
+{"event": "checkpoint", "epoch": 14, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 14, "held_out_auc": 0.7930646216575256, "mean_edge_prob": 0.027416639029979706}
+{"event": "epoch", "epoch": 15, "epochs": 20, "loss": 0.08708039717748761}
+{"event": "epoch", "epoch": 16, "epochs": 20, "loss": 0.08666219760198146}
+{"event": "checkpoint", "epoch": 16, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 16, "held_out_auc": 0.8000403582197221, "mean_edge_prob": 0.020023133605718613}
+{"event": "epoch", "epoch": 17, "epochs": 20, "loss": 0.08615995303262025}
+{"event": "epoch", "epoch": 18, "epochs": 20, "loss": 0.08588975376915187}
+{"event": "checkpoint", "epoch": 18, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 18, "held_out_auc": 0.8048663900758615, "mean_edge_prob": 0.02048015035688877}
+{"event": "epoch", "epoch": 19, "epochs": 20, "loss": 0.08506863354705274}
+{"event": "epoch", "epoch": 20, "epochs": 20, "loss": 0.08478918578475714}
+{"event": "checkpoint", "epoch": 20, "path": "pretrained/bcnp_24var.pt"}
+{"event": "eval", "epoch": 20, "held_out_auc": 0.8093848708385237, "mean_edge_prob": 0.02197360433638096}
+{"event": "final_checkpoint", "path": "pretrained/bcnp_24var.pt"}
+{"event": "done"}
+{"event": "resume", "from_epoch": 20}

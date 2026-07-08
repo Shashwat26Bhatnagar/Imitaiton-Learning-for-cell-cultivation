@@ -1,0 +1,15 @@
+{
+  "num_nodes": 24,
+  "d_model": 128,
+  "dim_feedforward": 256,
+  "nhead": 8,
+  "num_layers_encoder": 4,
+  "num_layers_decoder": 4,
+  "n_perm_samples": 50,
+  "sinkhorn_iter": 300,
+  "generators": [
+    "neuralnet",
+    "linear"
+  ],
+  "num_samples": 300
+}
