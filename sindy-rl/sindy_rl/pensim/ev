@@ -1,0 +1,96 @@
+"""PenSim (smpl) wrapped for SINDy-RL: gymnasium API, ZOH frame-skip, delay embedding."""
+import numpy as np
+import gymnasium
+from gymnasium.spaces import Box
+
+from pensimpy.examples.recipe import Recipe, RecipeCombo
+from pensimpy.data.constants import (
+    FS, FOIL, FG, PRES, DISCHARGE, WATER, PAA,
+    FS_DEFAULT_PROFILE, FOIL_DEFAULT_PROFILE, FG_DEFAULT_PROFILE, PRESS_DEFAULT_PROFILE,
+    DISCHARGE_DEFAULT_PROFILE, WATER_DEFAULT_PROFILE, PAA_DEFAULT_PROFILE)
+from smpl.envs.pensimenv import PenSimEnvGym, NUM_STEPS
+
+OBS_NAMES = ['t', 'pH', 'T', 'Fa', 'Fb', 'Fc', 'Fh', 'Wt', 'DO2']
+ACT_NAMES = ['discharge', 'Fs', 'Foil', 'Fg', 'pres', 'Fw']
+
+
+def default_recipe_combo():
+    """Stock IndPenSim recipe. Only Fpaa is drawn from it at runtime; the other
+    six channels are overridden by the agent's actions."""
+    return RecipeCombo(recipe_dict={
+        FS: Recipe(FS_DEFAULT_PROFILE, FS),
+        FOIL: Recipe(FOIL_DEFAULT_PROFILE, FOIL),
+        FG: Recipe(FG_DEFAULT_PROFILE, FG),
+        PRES: Recipe(PRESS_DEFAULT_PROFILE, PRES),
+        DISCHARGE: Recipe(DISCHARGE_DEFAULT_PROFILE, DISCHARGE),
+        WATER: Recipe(WATER_DEFAULT_PROFILE, WATER),
+        PAA: Recipe(PAA_DEFAULT_PROFILE, PAA),
+    })
+
+
+class PenSimSINDyEnv(gymnasium.Env):
+    """
+    Adapts smpl's PenSimEnvGym (old gym API, 4-tuple step) to gymnasium.
+
+    Two knobs matter for SINDy:
+      frame_skip: zero-order hold. PenSim's native step is 12 min; the default 5
+                  gives a 1 h control interval and a 230-step batch, which makes
+                  the discrete-time map far better conditioned.
+      n_delay:    Takens-style delay embedding. Biomass, substrate and penicillin
+                  are NOT observed, so lagged (Fa, Fb, Fc) -- the internal pH/temp
+                  PID outputs -- are the handle on the latent state.
+
+    obs: [t, pH, T, Fa, Fb, Fc, Fh, Wt, DO2] x (1 + n_delay), newest block first
+    act: [discharge, Fs, Foil, Fg, pres, Fw], normalized to [-1, 1]
+    """
+
+    def __init__(self, env_config=None):
+        cfg = dict(env_config or {})
+        self.frame_skip = int(cfg.get('frame_skip', 5))
+        self.n_delay = int(cfg.get('n_delay', 2))
+        self.seed_ref = cfg.get('random_seed_ref', None)
+
+        self.env = PenSimEnvGym(recipe_combo=default_recipe_combo(),
+                                normalize=True, fast=True)
+
+        self.max_episode_steps = int(
+            cfg.get('max_episode_steps', NUM_STEPS // self.frame_skip))
+
+        self.observation_space = Box(-np.inf, np.inf,
+                                     shape=(9 * (1 + self.n_delay),),
+                                     dtype=np.float32)
+        self.action_space = Box(-1.0, 1.0, shape=(6,), dtype=np.float32)
+
+        self._hist = []
+        self.n_episode_steps = 0
+
+    def _stack(self, obs):
+        """Append obs and return the delay-embedded vector (newest first)."""
+        self._hist.append(np.asarray(obs, dtype=np.float32))
+        while len(self._hist) < self.n_delay + 1:
+            self._hist.insert(0, self._hist[0])          # pad at episode start
+        self._hist = self._hist[-(self.n_delay + 1):]
+        return np.concatenate(self._hist[::-1])
+
+    def reset(self, seed=None, options=None):
+        self._hist = []
+        self.n_episode_steps = 0
+        obs = self.env.reset(random_seed_ref=self.seed_ref)
+        return self._stack(obs), {}
+
+    def step(self, action):
+        a = np.clip(np.asarray(action, dtype=np.float32), -1.0, 1.0).tolist()
+
+        rew = 0.0
+        done = False
+        info = {}
+        for _ in range(self.frame_skip):
+            obs, r, done, info = self.env.step(a)         # old gym: 4-tuple
+            rew += float(r)                               # dense yield increment
+            if done:
+                break
+
+        self.n_episode_steps += 1
+        term = bool(info.get('error_occurred', False))
+        trunc = bool(done) or (self.n_episode_steps >= self.max_episode_steps)
+        return self._stack(obs), rew, term, trunc, info

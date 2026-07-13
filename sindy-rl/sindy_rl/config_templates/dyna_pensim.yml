@@ -1,0 +1,151 @@
+# --------------------------------------------------------
+# SINDy-RL on PenSim (penicillin), NORMALIZED coordinates.
+#
+# All bounds below are in NORMALIZED units because NormalizedPenSimEnv
+# presents obs/actions in [-1, 1]. The real engineering units live only
+# inside sindy_rl/pensim_env.py (RAW_ACT_* / RAW_OBS_*).
+#
+# Do NOT put raw PenSim ranges (Wt ~ 6e4) in here again: that is what
+# blew up cond(Theta) to 3e12 and made STLSQ zero 133/136 features.
+# --------------------------------------------------------
+
+exp_dir: pensim
+n_train_iter: 40000
+dyn_fit_freq: 25
+fcnet_hiddens: [64, 64]
+use_pbt: False
+
+real_env:
+  class: NormalizedPenSimEnv
+  config:
+    max_episode_steps: 552
+    rew_scale: 100.0          # penicillin yield is O(0.05); STLSQ thresholds
+                              # are ABSOLUTE, so lift the target off the floor
+    pensim_config: {}         # forwarded to the raw PenSimEnv
+
+drl:
+  class: PPO
+  config:
+    training:
+      gamma: 0.99
+      lr: 3.0e-4
+      lambda_: 0.95
+      vf_loss_coeff: 0.5
+      vf_clip_param: 0.2
+      clip_param: 0.2
+      grad_clip: 0.5
+    environment:
+      env:
+      env_config:
+        init_real_on_start: False
+        reset_from_buffer: True
+        max_episode_steps: 552
+        real_env_class: NormalizedPenSimEnv
+        real_env_config:
+          max_episode_steps: 552
+          rew_scale: 100.0
+          pensim_config: {}
+
+        ensemble_modes:
+          dyn: median
+          rew: median
+        init_weights: True
+
+        act_dim: 6            # discharge, Fs, Foil, Fg, pres, Fw
+        obs_dim: 9            # t, pH, T, Fa, Fb, Fc, Fh, Wt, DO2
+
+        # NORMALIZED bounds. Actions are exactly [-1, 1].
+        act_bounds:
+          - [-1.0, 1.0]
+          - [-1.0, 1.0]
+          - [-1.0, 1.0]
+          - [-1.0, 1.0]
+          - [-1.0, 1.0]
+          - [-1.0, 1.0]
+
+        # Observations are ~[-1, 1]; the slack avoids `is_term()` firing on
+        # the first step from float error or a slightly out-of-range PenSim
+        # transient. (BaseSurrogateEnv.is_term() tests against obs_bounds.)
+        obs_bounds:
+          - [-1.5, 1.5]   # t
+          - [-1.5, 1.5]   # pH
+          - [-1.5, 1.5]   # T
+          - [-1.5, 1.5]   # Fa
+          - [-1.5, 1.5]   # Fb
+          - [-1.5, 1.5]   # Fc
+          - [-1.5, 1.5]   # Fh
+          - [-1.5, 1.5]   # Wt
+          - [-1.5, 1.5]   # DO2
+    framework: torch
+    evaluation:
+      evaluation_interval:
+
+off_policy_buffer:
+  config:
+    max_traj:
+    max_samples:
+  init:
+    type: file
+    kwargs:
+      fname: /replace/with/path/to/pensim_trajectories.pkl   # MUST be normalized
+
+on_policy_buffer:
+  config:
+    max_traj:
+    max_samples: 12000
+  collect:
+    n_steps: 1104          # 2 batches
+    n_steps_reset: 552     # one full cultivation
+
+dynamics_model:
+  class: EnsembleSINDyDynamicsModel
+  config:
+    'dt': 1
+    'discrete': True
+    'optimizer':
+      'base_optimizer':
+        'name': 'STLSQ'
+        'kwargs':
+          'alpha': 1.0e-5
+          'threshold': 1.0e-3      # now meaningful: features are O(1)
+      'ensemble':
+        'bagging': True
+        'library_ensemble': True
+        'n_models': 20
+    'feature_library':
+      name: PolynomialLibrary
+      kwargs:
+        degree: 2
+        include_bias: True
+        include_interaction: True
+
+rew_model:
+  class: EnsembleSparseRewardModel
+  config:
+    'use_control': True
+    'optimizer':
+      'base_optimizer':
+        'name': 'STLSQ'
+        'kwargs':
+          'alpha': 1.0e-5
+          'threshold': 1.0e-3      # was 5.0e-1 -> that zeroed 133/136 features
+      'ensemble':
+        'bagging': True
+        'library_ensemble': True
+        'n_models': 20
+    'feature_library':
+      name: PolynomialLibrary
+      kwargs:
+        degree: 2
+        include_bias: True
+        include_interaction: True
+
+ray_config:
+  run_config:
+    name: dyna_pensim_normalized
+    stop:
+      num_env_steps_sampled: 5.0e+6
+    log_to_file: True
+  tune_config:
+    num_samples: 20
+  checkpoint_freq: 10
