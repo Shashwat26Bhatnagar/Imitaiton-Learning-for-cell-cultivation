@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "dissertation"
 version = "0.1.0"
-description = "Dissertation project: PenSim GP world model (MC-PILCO) + BCNP causal discovery"
+description = "Dissertation project: PenSim GP world model (MC-PILCO) + BCNP causal discovery + SINDy-RL"
 authors = ["s2892016"]
 readme = "README.md"
 packages = [
@@ -9,10 +9,11 @@ packages = [
     { include = "model_learning",  from = "MCPILCO" },
     { include = "gpr_lib",         from = "MCPILCO" },
     { include = "policy_learning", from = "MCPILCO" },
+    { include = "sindy_rl",        from = "sindy-rl" },
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.10,<3.12"
 
 # --- core numerical / ML stack ---
 numpy = ">=1.24,<2.0"
@@ -32,6 +33,16 @@ attrdict3 = ">=2.0,<3.0"
 
 # --- smpl / mzutils transitive need ---
 hashfile = ">=1.0,<3.0"
+gym = ">=0.26,<0.27"
+
+# --- SINDy-RL stack ---
+pysindy = ">=1.7,<2.0"
+derivative = ">=0.6,<1.0"
+gymnasium = "0.26.3"
+ray = { version = "2.6.3", extras = ["rllib", "tune"] }
+dm-control = ">=1.0.9,<2.0"
+pyyaml = ">=6.0,<7.0"
+seaborn = ">=0.12,<1.0"
 
 # --- local sibling packages ---
 smpl = { path = "smpl", develop = true }
@@ -39,11 +50,10 @@ pensimpy = { path = "PenSimPy", develop = true }
 fastodeint = { path = "fastodeint", develop = true }
 
 # --- optional extras (only for MC-PILCO's MuJoCo/UR5 demos) ---
-gym = { version = ">=0.21,<0.27", optional = true }
 mujoco-py = { version = ">=2.0,<2.2", optional = true }
 
 [tool.poetry.extras]
-mujoco = ["gym", "mujoco-py"]
+mujoco = ["mujoco-py"]
 
 [[tool.poetry.source]]
 name = "pytorch-cpu"

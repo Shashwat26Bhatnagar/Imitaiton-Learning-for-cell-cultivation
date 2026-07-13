@@ -34,7 +34,17 @@ MIN_OBS = np.array(
     [0.0, 0.0, 118.98977, 0.0, 0.0, 0.0, 0.0, 25003.258, 0.0],
     dtype=np.float64,
 )
-OBS_NAMES = [f"obs_{i}" for i in range(OBS_DIM)]
+OBS_NAMES = [
+    "pH",
+    "Temperature",
+    "Acid flow rate",
+    "Base flow rate",
+    "Cooling water",
+    "Heating water",
+    "Vessel Weight",
+    "Dissolved oxygen",
+    "Yield Per Step",
+]
 
 # ----------------------------------------------------------------------------
 # Action bounds (from PenSimEnvGym defaults).
@@ -42,7 +52,14 @@ OBS_NAMES = [f"obs_{i}" for i in range(OBS_DIM)]
 # ----------------------------------------------------------------------------
 MAX_ACTION = np.array([4100.0, 151.0, 36.0, 76.0, 1.2, 510.0], dtype=np.float64)
 MIN_ACTION = np.array([0.0, 7.0, 21.0, 29.0, 0.5, 0.0], dtype=np.float64)
-ACTION_NAMES = [f"act_{i}" for i in range(ACTION_DIM)]
+ACTION_NAMES = [
+    "Sugar feed rate",
+    "Soil bean feed rate",
+    "Aeration rate",
+    "Back pressure",
+    "Discharge rate",
+    "Water injection",
+]
 
 # A physically-valid baseline action (the one used in the SMPL demo). We collect
 # *sub-optimal* trajectories by perturbing around this operating point.
